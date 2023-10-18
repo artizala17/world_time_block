@@ -1,0 +1,5 @@
+name: World Time Block
+type: module
+description: Provides a user site location and the current time for location.
+core_version_requirement: ^9 || ^10
+package: Custom
