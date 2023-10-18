@@ -47,10 +47,10 @@ class GetLocationBlock extends BlockBase implements ContainerFactoryPluginInterf
     $build['#theme'] = 'get_world_time';
     $build['#country'] = $this->gettime->getCountry();
     $build['#city'] = $this->gettime->getCity();
-    $build['#time'] = $this->gettime->getTime();
-    $build['#date'] = $this->gettime->getDate();
+    $build['#time'] = $this->gettime->getDatetimeFormat()['time'];
+    $build['#date'] = $this->gettime->getDatetimeFormat()['date'];
     $build['#timezone'] = $this->gettime->getTimezone();
-    $build['#current_time'] = $this->gettime->getDatetimeFormat();
+    $build['#current_time'] = $this->gettime->getDatetimeFormat()['dateformat'];
     $build['#cache'] = [
       'max-age' => 0
     ];

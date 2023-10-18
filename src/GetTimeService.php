@@ -71,27 +71,12 @@ class GetTimeService {
    * Datetime format as per timezone.
    */
   public function getDatetimeFormat() {
+    $selectedTimezone = $this->getTimezone();
     $timestamp = $this->getCurrentTimestamp();
     $dateformat = $this->dateFormatter->format($timestamp, 'custom', 'dS M Y - H:i A', $this->getTimezone());
-    return $dateformat;
-  }
-
-  /**
-   * Get current time.
-   */
-  public function getTime() {
-    $timestamp = $this->getCurrentTimestamp();
     $time = $this->dateFormatter->format($timestamp, 'custom', 'H:i a', $this->getTimezone());
-    return $time;
-  }
-
-  /**
-   * Get current date.
-   */
-  public function getDate() {
-    $timestamp = $this->getCurrentTimestamp();
     $date = $this->dateFormatter->format($timestamp, 'custom', 'l, d F Y', $this->getTimezone());
-    return $date;
+    return ['dateformat' => $dateformat, 'time' => $time, 'date' => $date];
   }
 
 }
