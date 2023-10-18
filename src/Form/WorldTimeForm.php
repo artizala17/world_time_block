@@ -6,6 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Class WorldTimeForm.
@@ -22,10 +23,12 @@ class WorldTimeForm extends ConfigFormBase {
   /**
    * Constructs a CacheTagsInvalidatorInterface object
    * 
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
    * The cache tags invalidator
    */
-  public function _construct(CacheTagsInvalidatorInterface $cache_tags_invalidator) {
+  public function _construct(ConfigFactoryInterface $config_factory, CacheTagsInvalidatorInterface $cache_tags_invalidator) {
+    parent::__construct($config_factory);
     $this->cacheTagsInvalidator = $cache_tags_invalidator;
   }
 
@@ -34,6 +37,7 @@ class WorldTimeForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('config.factory'),
       $container->get('cache_tags.invalidator')
     );
   }

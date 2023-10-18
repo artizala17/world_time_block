@@ -1,0 +1,6 @@
+world_time_block.config_form_admin:
+  title: 'World Time Form'
+  description: 'Manage timeone form'
+  parent: system.admin_config_system
+  route_name: world_time_block.config_form
+  weight: 1
