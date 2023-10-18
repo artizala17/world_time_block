@@ -1,0 +1,7 @@
+world_time_block.config_form:
+  path: '/admin/config/worldtime-form'
+  defaults:
+    _form: '\Drupal\world_time_block\Form\WorldTimeForm'
+    _title: 'World Time Form'
+  requirements:
+    _role: 'administrator'
