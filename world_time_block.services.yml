@@ -1,0 +1,4 @@
+services:
+  world_time_block.get_time:
+    class: Drupal\world_time_block\GetTimeService
+    arguments: ['@config.factory']
