@@ -14,14 +14,14 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 class WorldTimeForm extends ConfigFormBase {
 
   /**
-   * The cache tags invalidator
+   * The cache tags invalidator.
    * 
    * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
    */
   protected $cacheTagsInvalidator;
 
   /**
-   * Constructs a CacheTagsInvalidatorInterface object
+   * Constructs a CacheTagsInvalidatorInterface object.
    * 
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
@@ -97,8 +97,6 @@ class WorldTimeForm extends ConfigFormBase {
       ->set('city', $form_state->getValue('city'))
       ->set('timezone', $form_state->getValue('timezone'))
       ->save();
-    $this->cacheTagsInvalidator->invalidateTags(['time_zone_tag']);
-    \Drupal::service('cache.render')->invalidateAll();
   }
 
 }
