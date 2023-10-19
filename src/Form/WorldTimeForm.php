@@ -2,34 +2,46 @@
 
 namespace Drupal\world_time_block\Form;
 
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
- * Class WorldTimeForm.
+ * Configure world_time_block settings to get current time as per timezone.
  */
 class WorldTimeForm extends ConfigFormBase {
 
   /**
    * The cache tags invalidator.
-   * 
+   *
    * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
    */
   protected $cacheTagsInvalidator;
 
   /**
-   * Constructs a CacheTagsInvalidatorInterface object.
-   * 
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
-   * The cache tags invalidator
+   * Drupal\Core\Cache\CacheBackendInterface definition.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
    */
-  public function _construct(ConfigFactoryInterface $config_factory, CacheTagsInvalidatorInterface $cache_tags_invalidator) {
+  protected $cacheRender;
+
+  /**
+   * Constructs a CacheTagsInvalidatorInterface object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
+   *   The cache tags invalidator.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_render
+   *   The cache render.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, CacheTagsInvalidatorInterface $cache_tags_invalidator, CacheBackendInterface $cache_render) {
     parent::__construct($config_factory);
     $this->cacheTagsInvalidator = $cache_tags_invalidator;
+    $this->cacheRender = $cache_render;
   }
 
   /**
@@ -38,7 +50,8 @@ class WorldTimeForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('cache_tags.invalidator')
+      $container->get('cache_tags.invalidator'),
+      $container->get('cache.render')
     );
   }
 
@@ -64,7 +77,6 @@ class WorldTimeForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('world_time_block.admin_settings');
 
-
     $form['country'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Country'),
@@ -78,7 +90,16 @@ class WorldTimeForm extends ConfigFormBase {
     $form['timezone'] = [
       '#type' => 'select',
       '#title' => $this->t('Timezone'),
-      '#options' => ["America/Chicago" => $this->t("America/Chicago"), "America/New_York" => $this->t("America/New_York"), "Asia/Tokyo" => $this->t("Asia/Tokyo"), "Asia/Dubai" => $this->t("Asia/Dubai"), "Asia/Kolkata" => $this->t("Asia/Kolkata"), "Europe/Amsterdam" => $this->t("Europe/Amsterdam"), "Europe/Oslo" => $this->t("Europe/Oslo"), "Europe/London" => $this->t("Europe/London")],
+      '#options' => [
+        "America/Chicago" => $this->t("America/Chicago"),
+        "America/New_York" => $this->t("America/New_York"),
+        "Asia/Tokyo" => $this->t("Asia/Tokyo"),
+        "Asia/Dubai" => $this->t("Asia/Dubai"),
+        "Asia/Kolkata" => $this->t("Asia/Kolkata"),
+        "Europe/Amsterdam" => $this->t("Europe/Amsterdam"),
+        "Europe/Oslo" => $this->t("Europe/Oslo"),
+        "Europe/London" => $this->t("Europe/London"),
+      ],
       '#empty_option' => '-- Select Timezone --',
       '#empty_value' => '_none_',
       '#default_value' => $config->get('timezone'),
@@ -97,6 +118,9 @@ class WorldTimeForm extends ConfigFormBase {
       ->set('city', $form_state->getValue('city'))
       ->set('timezone', $form_state->getValue('timezone'))
       ->save();
+
+    $this->cacheTagsInvalidator->invalidateTags(['timezone_tag']);
+    $this->cacheRender->invalidateAll();
   }
 
 }
