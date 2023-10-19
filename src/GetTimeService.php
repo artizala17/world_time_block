@@ -2,21 +2,18 @@
 
 namespace Drupal\world_time_block;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatter;
 
 /**
- * Class GetTimeService.
- *
+ * Class GetTimeService is used to call current time.
  */
 class GetTimeService {
 
   /**
    * Drupal\Core\Config\ConfigFactoryInterface definition.
-   * 
+   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
@@ -44,39 +41,15 @@ class GetTimeService {
     $this->dateFormatter = $date_formatter;
   }
 
+  /**
+   * Get timezone from service.
+   */
   public function getTimezone() {
     $worldtime = $this->configFactory->get('world_time_block.admin_settings');
-    return $worldtime->get('timezone');
-  }
-
-  public function getCity() {
-    $worldtime = $this->configFactory->get('world_time_block.admin_settings');
-    return $worldtime->get('city');
-  }
-
-  public function getCountry() {
-    $worldtime = $this->configFactory->get('world_time_block.admin_settings');
-    return $worldtime->get('country');
-  }
-
-  /**
-   * Get current timestamp.
-   */
-  public function getCurrentTimestamp() {
+    $timezone = $worldtime->get('timezone');
     $timestamp = $this->timeService->getCurrentTime();
-    return $timestamp;
-  }
-
-  /**
-   * Datetime format as per timezone.
-   */
-  public function getDatetimeFormat() {
-    $selectedTimezone = $this->getTimezone();
-    $timestamp = $this->getCurrentTimestamp();
-    $dateformat = $this->dateFormatter->format($timestamp, 'custom', 'dS M Y - H:i A', $this->getTimezone());
-    $time = $this->dateFormatter->format($timestamp, 'custom', 'H:i a', $this->getTimezone());
-    $date = $this->dateFormatter->format($timestamp, 'custom', 'l, d F Y', $this->getTimezone());
-    return ['dateformat' => $dateformat, 'time' => $time, 'date' => $date];
+    $dateformat = $this->dateFormatter->format($timestamp, 'custom', 'dS M Y - H:i A', $timezone);
+    return $dateformat;
   }
 
 }
