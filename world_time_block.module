@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Implements hook_theme().
  */
 function world_time_block_theme($existing, $type, $theme, $path) {
@@ -9,10 +13,7 @@ function world_time_block_theme($existing, $type, $theme, $path) {
       'variables' => [
         'country' => NULL,
         'city' => NULL,
-        'timezone' => NULL,
-        'time' => NULL,
-        'date' => NULL,
-        'current_time' => NULL
+        'dateformat' => NULL,
       ],
     ],
   ];
