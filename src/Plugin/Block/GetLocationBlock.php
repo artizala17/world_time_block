@@ -3,14 +3,13 @@
 namespace Drupal\world_time_block\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\world_time_block\GetTimeService;
-use Drupal\Core\Datetime\DrupalDateTime;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a user current location block that display user location with current time.
+ * Provides a user current location block that display current time.
  *
  * @Block(
  *   id = "world_time_view_block",
@@ -21,44 +20,76 @@ class GetLocationBlock extends BlockBase implements ContainerFactoryPluginInterf
 
   /**
    * Drupal\world_time_block\GetTimeService definition.
-   * 
+   *
    * @var \Drupal\world_time_block\GetTimeService
    */
-  protected $gettime;
+  protected $getTime;
 
   /**
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   * @param array $configuration
-   * @param string $plugin_id
-   * @param mixed $plugin_definition
-   * 
-   * @return static
+   * Drupal\Core\Config\ConfigFactoryInterface definition.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = new static($configuration, $plugin_id, $plugin_definition);
-    $instance->gettime = $container->get('world_time_block.get_time');
-    return $instance;
+  protected $configFactory;
+
+  /**
+   * Constructs a Drupalist object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\world_time_block\GetTimeService $get_time_service
+   *   The get time service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, GetTimeService $get_time_service) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->configFactory = $config_factory;
+    $this->getTime = $get_time_service;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function build() {  
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory'),
+      $container->get('world_time_block.get_time')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function build() {
+    $worldtime = $this->configFactory->get('world_time_block.admin_settings');
+    $city = $worldtime->get('city');
+    $country = $worldtime->get('country');
+    $timezone = $worldtime->get('timezone');
+    $dateformat = $this->getTime->getTimezone();
+
     $build['#theme'] = 'get_world_time';
-    $build['#country'] = $this->gettime->getCountry();
-    $build['#city'] = $this->gettime->getCity();
-    $build['#time'] = $this->gettime->getDatetimeFormat()['time'];
-    $build['#date'] = $this->gettime->getDatetimeFormat()['date'];
-    $build['#timezone'] = $this->gettime->getTimezone();
-    $build['#current_time'] = $this->gettime->getDatetimeFormat()['dateformat'];
+    $build['#country'] = $country;
+    $build['#city'] = $city;
+    $build['#dateformat'] = $dateformat;
+    $build['#attached']['drupalSettings']['timezone'] = $timezone;
+    $build['#attached']['library'] = ['world_time_block/world_time_js_example'];
     $build['#cache'] = [
-      'max-age' => 0
+      'tags' => ['timezone_tag'],
+      'max-age' => 0,
     ];
     return $build;
   }
 
   /**
-   *
+   * Clear cache max-age.
    */
   public function getCacheMaxAge() {
     return 0;
