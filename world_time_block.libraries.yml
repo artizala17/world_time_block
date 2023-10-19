@@ -1,0 +1,11 @@
+world_time_js_example:
+  css:
+    theme:
+      css/custom.css: {}
+  js:
+    js/custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+    - core/drupalSettings

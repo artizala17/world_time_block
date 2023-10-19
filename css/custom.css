@@ -1,0 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
+.datetime-wrapper{font-family:'Roboto',sans-serif;}
+.datetime-wrapper #time{font-size:25px;font-weight:900;margin-bottom:8px;}
+.datetime-wrapper .country-block span{margin-bottom:2px;}
