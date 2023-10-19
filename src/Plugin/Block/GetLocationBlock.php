@@ -73,12 +73,11 @@ class GetLocationBlock extends BlockBase implements ContainerFactoryPluginInterf
     $city = $worldtime->get('city');
     $country = $worldtime->get('country');
     $timezone = $worldtime->get('timezone');
-    $dateformat = $this->getTime->getTimezone();
-
+    // Service will return date format 19th Sep 2023 - 11:15 AM
+    // $dateformat = $this->getTime->getTimezone();
     $build['#theme'] = 'get_world_time';
     $build['#country'] = $country;
     $build['#city'] = $city;
-    $build['#dateformat'] = $dateformat;
     $build['#attached']['drupalSettings']['timezone'] = $timezone;
     $build['#attached']['library'] = ['world_time_block/world_time_js_example'];
     $build['#cache'] = [
