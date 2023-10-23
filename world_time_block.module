@@ -13,6 +13,7 @@ function world_time_block_theme($existing, $type, $theme, $path) {
       'variables' => [
         'country' => NULL,
         'city' => NULL,
+        'dateformat' => NULL,
       ],
     ],
   ];

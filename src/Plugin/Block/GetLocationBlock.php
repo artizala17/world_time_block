@@ -3,6 +3,7 @@
 namespace Drupal\world_time_block\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\UncacheableDependencyTrait;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\world_time_block\GetTimeService;
@@ -69,19 +70,24 @@ class GetLocationBlock extends BlockBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public function build() {
+    use UncacheableDependencyTrait;
+
     $worldtime = $this->configFactory->get('world_time_block.admin_settings');
     $city = $worldtime->get('city');
     $country = $worldtime->get('country');
     $timezone = $worldtime->get('timezone');
-    // Service will return date format 19th Sep 2023 - 11:15 AM
-    // $dateformat = $this->getTime->getTimezone();
+    // Service will return date format 19th Sep 2023 - 11:15 AM.
+    $dateformat = $this->getTime->getTimezone();
+
     $build['#theme'] = 'get_world_time';
     $build['#country'] = $country;
     $build['#city'] = $city;
+    $build['#dateformat'] = $dateformat;
     $build['#attached']['drupalSettings']['timezone'] = $timezone;
     $build['#attached']['library'] = ['world_time_block/world_time_js_example'];
     $build['#cache'] = [
       'tags' => ['timezone_tag'],
+      'contexts' => ['user.roles:anonymous'],
       'max-age' => 0,
     ];
     return $build;
